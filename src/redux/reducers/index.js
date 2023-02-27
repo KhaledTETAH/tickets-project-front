@@ -1,9 +1,9 @@
 import { combineReducers } from "redux";
-import { ticketsReducer, selectedProductReducer } from "./ticketReducer"; 
+import { ticketsReducer, selectedTicketReducer } from "./ticketReducer"; 
 
 const reducers = combineReducers({
     ticketsReducer: ticketsReducer,
-    selectedTicketReducer: selectedProductReducer,
+    selectedTicketReducer: selectedTicketReducer, 
 });
 
 export default reducers;

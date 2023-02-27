@@ -12,4 +12,17 @@ export const selectedTicket = (ticket) => {
         type: ticketActionTypes.SELECTED_TICKET,
         payload: ticket,
     }
-}
+};
+
+export const removeSelectedTicket = () => {
+    return {
+        type: ticketActionTypes.REMOVE_SELECTED_TICKET
+    }
+};
+
+export const addTicket = (ticket) => {
+    return {
+        type: ticketActionTypes.ADD_TICKET,
+        payload: ticket,
+    }
+};

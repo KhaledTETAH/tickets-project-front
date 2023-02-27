@@ -1,21 +1,36 @@
 import Header from './Components/Header/Header';
 import TicketList from './Components/TicketList/TicketList';
 import Ticket from './Components/Ticket/Ticket';
+import AddTicket from './Components/AddTicket/AddTicket';
 import TicketDetails from './Components/TicketDetails/TicketDetails';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomeContainer from './Components/HomeContainer/HomeContainer';
+import Login from './Components/Login/Login';
+import { useEffect, useState } from 'react';
+import PrivateRoute from './Components/Login/PrivateRoute';
 
 
 function App() {
+  //const [user, setUser] = useState();
+
+
+
   return (
-    <div className="App">
-      <Header />
-      <BrowserRouter>
-        <Routes>
-          <Route path='/'  element={<TicketList />} />
-          <Route path='/details'  element={<TicketDetails />} />
-        </Routes>
-      </BrowserRouter>
+    <div className="App"> 
+        <>
+          <BrowserRouter>         
+            <Routes>
+              <Route path='/'  element={<Login />} />
+              <Route path='/home'  element={
+                <PrivateRoute>
+                  <HomeContainer />
+                </PrivateRoute>
+              } />
+              <Route path='/add' element={<AddTicket />} />
+            </Routes>
+          </BrowserRouter> 
+        </>   
     </div>
   );
 }

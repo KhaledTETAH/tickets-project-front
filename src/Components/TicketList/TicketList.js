@@ -1,15 +1,20 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { setTickets } from "../../redux/actions/ticketActions";
+import { selectedTicket, setTickets } from "../../redux/actions/ticketActions";
 import Ticket from "../Ticket/Ticket";
 import './TicketList.css';
-import TicketDetails from "../TicketDetails/TicketDetails";
+import { propTypes } from "react-bootstrap/esm/Image";
+import { Request } from "react-axios";
 
 const URL = `http://localhost:8000/tickets_app/v1/tickets/`;
 
-const TicketList = () => {
+const TicketList = (props) => {
     const tickets = useSelector((state) => state.ticketsReducer.tickets);
+
+    const hundleClick = (key) => {
+        props.onTicketClick(key);
+    }
 
     const dispatch = useDispatch();
 
@@ -21,6 +26,14 @@ const TicketList = () => {
         dispatch(setTickets(response.data));
     };
 
+    const handleClick = async (id) => {
+        const response = await axios.get(URL+id)
+        .catch((error) => {
+            console.log(error)
+        });
+        dispatch(selectedTicket(response.data));
+    }
+
     useEffect(() => {
         fetchTicket()
     }, []);
@@ -29,11 +42,11 @@ const TicketList = () => {
 
     const renderTicketsList = tickets.map((ticket) => {
         return (
-            <div className="ticket-div" key={ticket.id} onClick={() => {return ticket.id}}>
+            <div className="ticket-div" key={ticket.id} onClick={() => handleClick(ticket.id)}>
                 <Ticket title={ticket.title}
                         description={ticket.description}
                         deadline={ticket.deadline}
-                        status={ticket.status.name}
+                        status={ticket.status}
                 />
             </div>
         )

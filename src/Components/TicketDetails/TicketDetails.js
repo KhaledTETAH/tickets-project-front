@@ -12,11 +12,11 @@ const SELECTED_TICKET_URL = `http://localhost:8000/tickets_app/v1/tickets/`;
 const TicketDetails = (props) => {
 
 
-    const ticket = useSelector((state) => state.selectedTicketReducer)
+     const ticket = useSelector((state) => state.selectedTicketReducer); 
 
-    const dispatch = useDispatch();    
+/*    const dispatch = useDispatch();    
 
-    console.log("selcted ticket: ", ticket);
+     console.log("selcted ticket: ", ticket);
 
     const fetchSelectedTicketDetails = async (id) => {
         const response = await axios
@@ -26,17 +26,18 @@ const TicketDetails = (props) => {
             });
         
         dispatch(selectedTicket(response.data));
-    }
+    } */
 
-    useEffect(() => {
-        fetchSelectedTicketDetails(props.ticketId)
-    }, []);
-
+/*    useEffect(() => {
+         fetchSelectedTicketDetails(props.ticketId)
+    }, [props.ticketId]);
+ */
     return(
         <div>
             <h2>Here is Ticket Details</h2>
             <p>ID: {ticket.id}</p>
             <p>Title: {ticket.title}</p>
+            <p>Deadline: {ticket.deadline}</p>
         </div>
     )
 

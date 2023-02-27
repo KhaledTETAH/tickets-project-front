@@ -1,0 +1,17 @@
+.home-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.home-container > div:first-child {
+    flex-grow: 4;
+    margin-right: 5px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.home-container > div:last-child {
+    flex-grow: 6;
+    margin-left: 5px;
+
+}

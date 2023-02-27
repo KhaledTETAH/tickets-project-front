@@ -5,11 +5,11 @@ const Ticket = (props) => {
     
     const divColor = (status = props.status) => {
         switch(status){
-            case "created":
+            case 1:
                 return 'red';
-            case "assigned":
+            case 2:
                 return 'orange';
-            case "closed":
+            case 3:
                 return 'green';
             default:
                 return 'red';
@@ -21,9 +21,9 @@ const Ticket = (props) => {
                 
             </div>
             <div className="info-container">
-                <h2>{props.title}</h2>
-                <p>{props.description}</p>
-                <p>{props.deadline}</p>
+                <h5 id="ticket-title">{props.title}</h5>
+                <p id="ticket-description">{props.description}</p>
+                <p id="ticket-deadline">{props.deadline}</p>
             </div>
         </div>
     )
