@@ -14,6 +14,13 @@ export const selectedTicket = (ticket) => {
     }
 };
 
+export const filterTicketsByStatus = (status) => {
+    return {
+        type: ticketActionTypes.FILTER_TICKETS_BY_STATUS,
+        payload: status,
+    }
+};
+
 export const removeSelectedTicket = () => {
     return {
         type: ticketActionTypes.REMOVE_SELECTED_TICKET

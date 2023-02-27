@@ -1,7 +1,8 @@
 import { ticketActionTypes } from "../constants/ticketAction-types";
 
 const ticketInitialState = {
-    tickets: []
+    tickets: [],
+    filteredTickets: []
 };
 
 export const ticketsReducer = (state = ticketInitialState, {type, payload}) => {
@@ -13,10 +14,29 @@ export const ticketsReducer = (state = ticketInitialState, {type, payload}) => {
                 ...state,
                 tickets:[...state.tickets, payload]
             };
+        case ticketActionTypes.FILTER_TICKETS_BY_STATUS:
+            const status = payload;
+          const filteredTickets = state.tickets.filter(
+            (ticket) => ticket.status === status
+          );
+          return { ...state, filteredTickets };
         default:
             return state;
     }
 };
+
+/* export const filterTicketsByStatusReducer = (state = ticketInitialState, {type, payload}) => {
+    switch (type) {
+        case ticketActionTypes.FILTER_TICKETS_BY_STATUS:
+          const status = payload;
+          const filteredTickets = state.tickets.filter(
+            (ticket) => ticket.status === status
+          );
+          return { ...state, filteredTickets };
+        default:
+          return state;
+      }
+}; */
 
 export const selectedTicketReducer = (state = {}, {type, payload}) => {
     switch (type) {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./AddTicket.css";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { addTicket } from "../../redux/actions/ticketActions";
 import axios from "axios";
 
