@@ -7,7 +7,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import axios from "axios";
 import './Header.css';
 import { useDispatch } from "react-redux";
-import { filterTicketsByStatus } from "../../redux/actions/ticketActions";
+import { filterTicketsByStatus, filteringTickets, removeSelectedTicket } from "../../redux/actions/ticketActions";
 
 const LOGOUT_URL = `http://localhost:8000/dj-rest-auth/logout/`;
 
@@ -16,6 +16,12 @@ const Header = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
 
   const dispatch = useDispatch();
+
+   /* display the add form */
+  const goToAddTicketForm = () => {
+    console.log('hhhhhh');
+    dispatch(removeSelectedTicket());
+}
 
   const handleLogout = () => {
     fetchLogoutApi();
@@ -30,17 +36,14 @@ const Header = () => {
   }
 
   const handleOnClick = (key) => {
-    dispatch(filterTicketsByStatus(key));
+    if(key === 0){
+      dispatch(filteringTickets(false));
+    }else {
+      dispatch(filteringTickets(true));
+      dispatch(filterTicketsByStatus(key));
+    }
+    
   }
-
-  /*   useEffect (() => {
-      const userInfo = async () => {
-        setUser(JSON.parse(localStorage.getItem("user")));
-        console.log(user)
-      };
-      userInfo();
-    }, []) */
-
 
   return (
     <>
@@ -49,8 +52,6 @@ const Header = () => {
           <Container>
             <Navbar.Brand href="#home">Navbar</Navbar.Brand>
             <Nav className="me-auto">
-              <Nav.Link href="#home">Home</Nav.Link>
-
               <NavDropdown
                 id="nav-dropdown-dark-example"
                 title="Filter By status"
@@ -72,6 +73,7 @@ const Header = () => {
                   Closed
                 </NavDropdown.Item>
               </NavDropdown>
+              <Nav.Link onClick={() => goToAddTicketForm()}>Add Form</Nav.Link>
 
             </Nav>
             <Nav className="d-flex">

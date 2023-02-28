@@ -14,12 +14,33 @@ export const selectedTicket = (ticket) => {
     }
 };
 
+export const filteringTickets = (filteringBool) => {
+    return {
+        type: ticketActionTypes.FILTERING_TICKETS,
+        payload: filteringBool
+    }
+};
+
 export const filterTicketsByStatus = (status) => {
     return {
         type: ticketActionTypes.FILTER_TICKETS_BY_STATUS,
         payload: status,
     }
 };
+
+export const assignTicket = (updatedTicket) => {
+    return {
+        type: ticketActionTypes.ASSIGN_TICKET,
+        payload: updatedTicket,
+    }
+};
+
+export const closeTicket = (updatedTicket) => {
+    return {
+        type: ticketActionTypes.CLOSE_TICKET,
+        payload: updatedTicket,
+    }
+}
 
 export const removeSelectedTicket = () => {
     return {

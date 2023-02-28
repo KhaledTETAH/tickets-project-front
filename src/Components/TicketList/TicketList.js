@@ -12,6 +12,7 @@ const URL = `http://localhost:8000/tickets_app/v1/tickets/`;
 const TicketList = (props) => {
     const tickets = useSelector((state) => state.ticketsReducer.tickets);
     const filteredTickets = useSelector((state) => state.ticketsReducer.filteredTickets);
+    const filteringTicketsBool = useSelector((state) => state.ticketsReducer.filtering);
 
     const hundleClick = (key) => {
         props.onTicketClick(key);
@@ -67,8 +68,8 @@ const TicketList = (props) => {
 
     return (
         <>
-            
-            {(Object.keys(filteredTickets).length === 0) ? renderTicketsList: renderFilteredTickets}
+            {/* {renderFilteredTickets} */}
+            {filteringTicketsBool ? renderFilteredTickets : renderTicketsList}
         </>
     )
 }
