@@ -1,10 +1,21 @@
+import { useSelector } from "react-redux";
 import { ticketActionTypes } from "../constants/ticketAction-types";
+import { selectedTicket } from "../actions/ticketActions";
+
 
 const ticketInitialState = {
     tickets: [],
     filteredTickets: [],
-    filtering: false
+    filtering: false,
 };
+
+const notificationInitialState = {
+    notifications: [],
+}
+
+const selectedTicketState = {
+    selectedTicket: {}
+}
 
 export const ticketsReducer = (state = ticketInitialState, { type, payload }) => {
     switch (type) {
@@ -50,31 +61,73 @@ export const ticketsReducer = (state = ticketInitialState, { type, payload }) =>
                 ...state,
                 tickets: updatedClosedTickets
             };
-            
+
         default:
             return state;
     }
 };
 
-/* export const filterTicketsByStatusReducer = (state = ticketInitialState, {type, payload}) => {
+export const notificationReducer = (state = notificationInitialState, {type, payload}) => {
     switch (type) {
-        case ticketActionTypes.FILTER_TICKETS_BY_STATUS:
-          const status = payload;
-          const filteredTickets = state.tickets.filter(
-            (ticket) => ticket.status === status
-          );
-          return { ...state, filteredTickets };
-        default:
-          return state;
-      }
-}; */
+        case ticketActionTypes.GET_USER_NOTIFICATIONS:
+            return {...state, notifications: payload};
 
-export const selectedTicketReducer = (state = {}, { type, payload }) => {
+        case ticketActionTypes.ADD_NOTIFICATION:
+            return {
+                ...state,
+                tickets: [ payload, ...state.notifications]
+            };
+        
+        case ticketActionTypes.READ_NOTIFICATION:
+            const notifs = state.notifications.map((notif) => {
+                if(notif.id === payload) {
+                    const readNotification = {...notif}
+                    readNotification.read = true;
+                    return  readNotification;
+                }else{
+                    return notif;
+                };
+            });
+            return {
+                ...state,
+                notifications: notifs
+            }; 
+
+        default:
+            return state;
+    }
+}
+
+export const selectedTicketReducer = (state = selectedTicketState, { type, payload }) => {
     switch (type) {
         case ticketActionTypes.SELECTED_TICKET:
-            return { ...state, ...payload };
+            return { ...state, 
+                selectedTicket: payload        
+            };
+
         case ticketActionTypes.REMOVE_SELECTED_TICKET:
-            return {};
+            return {
+                ...state,
+                selectedTicket: {}
+            };
+        
+        /* case ticketActionTypes.TREAT_SELECTED_TICKET:
+            let selectedForTreat = {...state};
+            selectedForTreat.status = 2;
+            return {
+                ...state,
+                selectedTicket: selectedForTreat,
+            };
+
+        case ticketActionTypes.CLOSE_SELECTED_TICKET:
+            let selectedForClose = {...state};
+            selectedForClose.status = 3;
+            return {
+                ...state,
+                selectedTicket: selectedForClose,
+            }; */
+        
+
         default:
             return state;
     }

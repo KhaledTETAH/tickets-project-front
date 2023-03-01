@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
@@ -6,26 +6,33 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 import Dropdown from 'react-bootstrap/Dropdown';
 import axios from "axios";
 import './Header.css';
-import { useDispatch } from "react-redux";
-import { filterTicketsByStatus, filteringTickets, removeSelectedTicket } from "../../redux/actions/ticketActions";
+import { useDispatch, useSelector } from "react-redux";
+import { filterTicketsByStatus, filteringTickets, removeSelectedTicket, getUserNotifications, selectTicket, readNotification } from "../../redux/actions/ticketActions";
+import { formatDate1 } from "../Utils/FormatDate1";
 
 const LOGOUT_URL = `http://localhost:8000/dj-rest-auth/logout/`;
+const NOTIFICATIONS_URL = `http://localhost:8000/tickets_app/v1/notifications/ticket/details/`;
+const URL = `http://localhost:8000/tickets_app/v1/tickets/`;
+const PATCH_NOTIFICATIONS_URL = `http://localhost:8000/tickets_app/v1/notifications/`;
 
 const Header = () => {
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
-
+  const userNotifications = useSelector((state) => state.notificationReducer.notifications);
   const dispatch = useDispatch();
 
-   /* display the add form */
+  /* display the add form */
   const goToAddTicketForm = () => {
-    console.log('hhhhhh');
     dispatch(removeSelectedTicket());
-}
+  };
+
+  const getNonReadNotification = () => {
+    return userNotifications.filter(notif => notif.read === false).length;
+  }
 
   const handleLogout = () => {
     fetchLogoutApi();
-  }
+  };
 
   const fetchLogoutApi = async () => {
     const response = await axios.post(LOGOUT_URL)
@@ -33,52 +40,117 @@ const Header = () => {
         console.log(error);
       })
     localStorage.removeItem("user");
-  }
+  };
 
   const handleOnClick = (key) => {
-    if(key === 0){
+    if (key === 0) {
       dispatch(filteringTickets(false));
-    }else {
+    } else {
       dispatch(filteringTickets(true));
       dispatch(filterTicketsByStatus(key));
-    }
-    
-  }
+    };
+  };
+
+  const handleShowNotifications = async (ticketId, notifId) => {
+    const response = await axios.get(URL + ticketId)
+      .catch((error) => {
+        console.log(error)
+      });
+
+    const res = await axios.patch(PATCH_NOTIFICATIONS_URL + notifId + "/", { read: true })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    dispatch(selectTicket(response.data));
+    dispatch(readNotification(notifId));
+  };
+
+  const fetchUserNotifications = async (userId) => {
+    const response = await axios.get(NOTIFICATIONS_URL + userId)
+      .catch((error) => {
+        console.log(error);
+      });
+    dispatch(getUserNotifications(response.data));
+  };
+
+  useEffect(() => {
+    fetchUserNotifications(user.id);
+  }, []);
 
   return (
     <>
       {window.location.pathname !== "/" ?
-        <Navbar bg="primary" variant="dark" className="navbar-container">
-          <Container>
+        <Navbar bg="primary" variant="dark" className="navbar-container"
+         style={{ position: "fixed", top: 0, width: "100%", background: "white", zIndex: 1,marginBottom:50 }} >
+          <Container >
             <Navbar.Brand href="#home">Navbar</Navbar.Brand>
+
             <Nav className="me-auto">
+
               <NavDropdown
                 id="nav-dropdown-dark-example"
                 title="Filter By status"
-                menuVariant="dark"
               >
-                <NavDropdown.Item as="button" onClick={() => handleOnClick(0)}>
+                <NavDropdown.Item as="button" onClick={() => handleOnClick(0)} key={0}>
                   All
                 </NavDropdown.Item>
 
-                <NavDropdown.Item as="button" onClick={() => handleOnClick(1)}>
+                <NavDropdown.Item as="button" onClick={() => handleOnClick(1)} key={1}>
                   Created
                 </NavDropdown.Item>
 
-                <NavDropdown.Item as="button" onClick={() => handleOnClick(2)}>
+                <NavDropdown.Item as="button" onClick={() => handleOnClick(2)} key={2}>
                   Assigned
                 </NavDropdown.Item>
-              
-                <NavDropdown.Item as="button" onClick={() => handleOnClick(3)}>
+
+                <NavDropdown.Item as="button" onClick={() => handleOnClick(3)} key={3}>
                   Closed
                 </NavDropdown.Item>
               </NavDropdown>
-              <Nav.Link onClick={() => goToAddTicketForm()}>Add Form</Nav.Link>
 
+              {(user.groups.includes(1)) ?
+                <NavDropdown
+                  id="nav-dropdown-dark-example"
+                  title={"Notification"+("("+getNonReadNotification()+")")}
+                >
+                  <div className="notifications-root-container">
+                    {userNotifications.map((notification) => (
+                      <>
+                        <div className={"notifications-container " + (notification.read ? 'white-notif' : 'grey-notif')}
+                          key={notification.id}
+                          onClick={() => handleShowNotifications(notification.by_ticket.id, notification.id)}>
+                          {/* <NavDropdown.Item as="button" > */}
+                          <div className="dropdown-content">
+                            <div className="notification-container">
+                              <div className="status-title-container">
+                                {(notification.ticket_status === 2) ? <div className="status-assignrd"></div> : null}
+                                {(notification.ticket_status === 3) ? <div className="status-closed"></div> : null}
+                                <div className="ticket-title">{notification.by_ticket.title}</div>
+                              </div>
+                              {(notification.ticket_status === 2) ?
+                                <div className="ticket-description">Your ticket is being treated.</div>
+                                : null}
+                              {(notification.ticket_status === 3) ?
+                                <div className="ticket-description">Your ticket is closed.</div>
+                                : null}
+                              <div className="ticket-date">{formatDate1(notification.time)}</div>
+                            </div>
+                          </div>
+                        </div>
+                        <hr className="notification-separator"></hr>
+                      </>
+                    ))}
+                  </div>
+                </NavDropdown>
+                : null}
+              {(user.groups.includes(1)) ?
+                <Nav.Link onClick={() => goToAddTicketForm()}>Add Form</Nav.Link>
+                : null}
             </Nav>
             <Nav className="d-flex">
               <Dropdown>
-                <Dropdown.Toggle variant="success" id="dropdown-basic" >
+                <Dropdown.Toggle variant="primary" id="dropdown-basic" >
                   {user.username}
                 </Dropdown.Toggle>
 

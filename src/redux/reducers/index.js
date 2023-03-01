@@ -1,10 +1,10 @@
 import { combineReducers } from "redux";
-import { ticketsReducer, selectedTicketReducer, filterTicketsByStatusReducer } from "./ticketReducer"; 
+import { ticketsReducer, selectedTicketReducer, notificationReducer } from "./ticketReducer"; 
 
 const reducers = combineReducers({
     ticketsReducer: ticketsReducer,
     selectedTicketReducer: selectedTicketReducer, 
-    /* filterTicketsByStatusReducer: filterTicketsByStatusReducer, */
+    notificationReducer: notificationReducer
 });
 
 export default reducers;

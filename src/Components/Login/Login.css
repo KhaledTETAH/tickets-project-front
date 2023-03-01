@@ -3,12 +3,14 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    
   }
 
   .login-container-2 {
     width: 400px;
     height: 350px;
     border: 2px solid #ccc;
+    border-radius: 7px;
     display: flex;
     flex-direction: column;
     justify-content: center;

@@ -1,35 +1,66 @@
 import React, { useState } from "react";
 import './TicketDetails.css';
-import { useParams } from "react-router-dom";
 import axios from "axios";
 import { useEffect } from "react";
 import Form from 'react-bootstrap/Form';
 import { useDispatch, useSelector } from "react-redux";
-import { selectedTicket, assignTicket, removeSelectedTicket, closeTicket } from "../../redux/actions/ticketActions";
+import { assignTicket, closeTicket, selectTicket } from "../../redux/actions/ticketActions";
 import { Button } from "react-bootstrap";
+import Alert from 'react-bootstrap/Alert';
 
 
 const PATCH_TICKET_URL = `http://localhost:8000/tickets_app/v1/tickets/`;
 const USER_INFO_URL = `http://localhost:8000/tickets_app/v1/users/`;
 const DOWNLOAD_FILE_URL = `http://localhost:8000/tickets_app/v1/file/download/`;
+const ADD_NOTIFICATION_URL = `http://localhost:8000/tickets_app/v1/notifications/`;
 
 const TicketDetails = () => {
 
 
-    const selectedTicket = useSelector((state) => state.selectedTicketReducer);
+    const selectedTicket = useSelector((state) => state.selectedTicketReducer.selectedTicket);
     const ticketsState = useSelector((state) => state.ticketsReducer);
     const [loggedUser, setLoggedUser] = useState(JSON.parse(localStorage.getItem("user")));
     const [createdByUser, setCreatedByUser] = useState();
     const [treatedByUser, setTreatedByUser] = useState();
+    const [showTreatAlert, setShowTreatAlert] = useState(false);
+    const [showCloseAlert, setShowCloseAlert] = useState(false);
     const [file, setFile] = useState('');
+    const [remarks, setRemarks] = useState('');
     const dispatch = useDispatch();
 
-   
+
 
     /* handle the PATCH request to th api */
     const handleTreatment = () => {
         console.log("selectedTicket.id: ", selectedTicket.id);
         fetchAssignReaquest(selectedTicket.id);
+        createNotification();
+        handleClick(selectedTicket.id);
+        showTreatAlertTimeout();
+    }
+
+    const showTreatAlertTimeout = () => {
+        setShowTreatAlert(true);
+        setTimeout(() => {
+            setShowTreatAlert(false)
+        }, 3000)
+    };
+
+
+    const showCloseAlertTimeout = () => {
+        setShowCloseAlert(true);
+        setTimeout(() => {
+            setShowCloseAlert(false)
+        }, 3000)
+    };
+
+
+    const handleClick = async (id) => {
+        const response = await axios.get(PATCH_TICKET_URL + id)
+            .catch((error) => {
+                console.log(error)
+            });
+        dispatch(selectTicket(response.data));
     }
 
     /* send PATCH request to the api */
@@ -44,19 +75,23 @@ const TicketDetails = () => {
         const updatedTicket = { ...selectedTicket };
         updatedTicket.status = payload.status;
         updatedTicket.assigned_to = payload.assigned_to;
-        updatedTicket.assigned_on = payload.assigned_on;
+        updatedTicket.assigned_on = payload.assigned_on.getTime();
         dispatch(assignTicket(updatedTicket));
     }
 
     const handleClose = (event) => {
         event.preventDefault();
         fetchCloseRequest(selectedTicket.id);
+        createNotification();
+        handleClick(selectedTicket.id);
+        showCloseAlertTimeout();
     }
 
     const fetchCloseRequest = async (id) => {
         let formData = new FormData();
         formData.append("feedback", file);
         formData.append("status", 3);
+        formData.append("remarks", remarks);
         console.log("formDatat: ", formData);
         let axiosConfig = {
             headers: {
@@ -65,6 +100,7 @@ const TicketDetails = () => {
         };
         const payload = {
             feedback: file,
+            remarks,
             status: 3
         }
         console.log("payload: ", payload);
@@ -73,6 +109,7 @@ const TicketDetails = () => {
         const updatedTicket = { ...selectedTicket };
         //updatedTicket.feedback = formData.feedback;
         updatedTicket.status = payload.status;
+        updatedTicket.remarks = payload.remarks;
         dispatch(closeTicket(updatedTicket));
     }
 
@@ -82,52 +119,89 @@ const TicketDetails = () => {
     }
 
     const fetchDownloadFile = async () => {
-        console.log("extension: ",getFileExtension(selectedTicket.feedback));;
+        console.log("extension: ", getFileExtension(selectedTicket.feedback));;
         const filePath = selectedTicket.feedback;
         const response = await axios.get(DOWNLOAD_FILE_URL,
-            {params: {"file_path": filePath},
-            responseType: 'blob'})
-            .catch((error) => {console.log(error);})
+            {
+                params: { "file_path": filePath },
+                responseType: 'blob'
+            })
+            .catch((error) => { console.log(error); })
         console.log(response);
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', selectedTicket.title+"&"+createdByUser.username+"&"+treatedByUser.username+getFileExtension(selectedTicket.feedback));
+        link.setAttribute('download', selectedTicket.title + "&" + createdByUser.username + "&" + treatedByUser.username + getFileExtension(selectedTicket.feedback));
         document.body.appendChild(link);
         link.click();
 
-    }
+    };
 
     const getFileExtension = (filePath) => {
         let endFilePath = filePath.slice(-7);
         const startIndex = endFilePath.indexOf(".");
         if (startIndex !== -1) {
             const result = endFilePath.substring(startIndex);
-            console.log(result); 
+            console.log(result);
             return result;
         }
-    }
+    };
+
+    const createNotification = () => {
+        const payload = {
+            time: new Date(),
+            read: false,
+            ticket_status: selectedTicket.status + 1,
+            by_ticket: selectedTicket.id,
+            notified_user: createdByUser.id
+        }
+        fetchCreatenotification(payload);
+    };
+
+    const fetchCreatenotification = async (payload) => {
+        console.log("payload: ", payload);
+        const response = await axios.post(ADD_NOTIFICATION_URL, payload)
+            .catch((error) => { console.log(error) })
+        console.log("Notification: ", response.data);
+    };
 
     useEffect(() => {
         /** get the information of the creater user */
         const fetchCreatedByUser = async (id) => {
             const response = await axios.get(USER_INFO_URL + id)
                 .catch((error) => { console.log(error) });
-                setCreatedByUser(response.data);
+            setCreatedByUser(response.data);
         };
         fetchCreatedByUser(selectedTicket.created_by);
 
         const fetchTreatedByUser = async (id) => {
             const response = await axios.get(USER_INFO_URL + id)
                 .catch((error) => { console.log(error) });
-                setTreatedByUser(response.data);
+            setTreatedByUser(response.data);
         };
-        fetchTreatedByUser(selectedTicket.assigned_to);
+        if (selectedTicket.status !== 1) {
+            fetchTreatedByUser(selectedTicket.assigned_to);
+        }
+
 
     }, [selectedTicket]);
 
     return (
         <div>
+            {showTreatAlert && (
+                <Alert key="warning" variant="warning" onClose={() => setTimeout(() => {
+                    setShowTreatAlert(false)
+                }, 3000)} dismissible>
+                    You start treating this ticket
+                </Alert>
+            )}
+            {showCloseAlert && (
+                <Alert key="success" variant="success" onClose={() => setTimeout(() => {
+                    setShowCloseAlert(false)
+                }, 3000)} dismissible>
+                    You closed this ticket
+                </Alert>
+            )}
             <h2>Here is Ticket Details</h2>
             <p>ID: {selectedTicket.id}</p>
             <p>Title: {selectedTicket.title}</p>
@@ -135,21 +209,30 @@ const TicketDetails = () => {
             <p>Description: {selectedTicket.description}</p>
             <p>Created By: {createdByUser ? createdByUser.username : null}</p>
             {(selectedTicket.status === 3) ?
-              <p>Treated By: {treatedByUser ? treatedByUser.username : null}</p>:
-            null}
+                <p>Treated By: {treatedByUser ? treatedByUser.username : null}</p> :
+                null}
             {(selectedTicket.status === 2) ?
-              <p>Being Treated By: {treatedByUser ? treatedByUser.username : null}</p>:
-            null}
+                <p>Being Treated By: {treatedByUser ? treatedByUser.username : null}</p> :
+                null}
             {(selectedTicket.status === 3 && selectedTicket.feedback) ?
-              <Button variant="outline-secondary" onClick={handleDownload}>Download</Button>:
-            null}
-            {/* {(selectedTicket.status === 3 && selectedTicket.feedback && loggedUser.groups.includes(2)) ?
-              <a  href={selectedTicket.feedback}>File</a>:
-            null} */}
+                <>
+                    <p>Remarks: {selectedTicket.remarks}</p>
+                    <Button variant="outline-secondary" onClick={handleDownload}>Download</Button>
+                </> :
+                null}
 
-            {(selectedTicket.status === 2) ?
+            {(selectedTicket.status === 2) && (loggedUser.groups.includes(2)) ?
                 <div className="upload-file-container">
                     <Form onSubmit={handleClose} encType="multipart/form-data">
+                        <Form.Group className="mb-3" >
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control as="textarea"
+                                id="description"
+                                value={remarks}
+                                onChange={(event) => {
+                                    setRemarks(event.target.value)
+                                }} required />
+                        </Form.Group>
                         <Form.Group controlId="formFile" className="mb-3">
                             <Form.Label>Upload descriptif file</Form.Label>
                             <Form.Control type="file"
@@ -158,23 +241,16 @@ const TicketDetails = () => {
                                     setFile(event.target.files[0])
                                 }} />
                         </Form.Group>
-                        {(selectedTicket.status === 2) ?
-                            <Button variant="success" type="submit">
-                                Close Ticket
-                            </Button> :
-                            null
-                        }
+                        <Button variant="success" type="submit">
+                            Close Ticket
+                        </Button>
                     </Form>
                 </div> :
                 null
             }
             {(Object.keys(selectedTicket).length === 0) ? null :
                 <>
-                    {/* <Button className="add-ticket-nav-button" type="button" onClick={() => goToAddTicketForm()}>
-                                Go To Add Ticket
-                            </Button> */}
-
-                    {(selectedTicket.status === 1) ?
+                    {(selectedTicket.status === 1) && (loggedUser.groups.includes(2)) ?
                         <Button variant="warning" type="button" onClick={() => handleTreatment()}>
                             Treat Ticket
                         </Button> :

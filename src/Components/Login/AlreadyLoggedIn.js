@@ -2,10 +2,9 @@ import React from "react";
 import { useLocalState } from "../Utils/UseLocalStorage";
 import { Navigate } from "react-router-dom";
 
-const PrivateRoute = ({children}) => {
+const AlreadyLoggedIn = ({children}) => {
     const [user, setUser] = useLocalState("", "user");
-    return user ? children : <Navigate to="/"/>
-};
+    return !user ? children : <Navigate to="/home"/>
+}
 
-export default PrivateRoute;
-
+export default AlreadyLoggedIn;

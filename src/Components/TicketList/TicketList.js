@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { selectedTicket, setTickets } from "../../redux/actions/ticketActions";
+import { selectTicket, setTickets, getUserNotifications } from "../../redux/actions/ticketActions";
 import Ticket from "../Ticket/Ticket";
 import './TicketList.css';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
+import { formatDate } from "../Utils/FormatDate";
 
 const URL = `http://localhost:8000/tickets_app/v1/tickets/`;
+const NOTIFICATIONS_URL = `http://localhost:8000/tickets_app/v1/notifications/ticket/details/`;
 
 const TicketList = (props) => {
     const tickets = useSelector((state) => state.ticketsReducer.tickets);
@@ -33,38 +33,54 @@ const TicketList = (props) => {
             .catch((error) => {
                 console.log(error)
             });
-        dispatch(selectedTicket(response.data));
+        dispatch(selectTicket(response.data));
     }
 
     useEffect(() => {
-        fetchTicket()
+        fetchTicket();
     }, []);
 
     console.log('tickets:', tickets);
 
-    const renderTicketsList = tickets.map((ticket) => {
+    let renderTicketsList = tickets.map((ticket) => {
         return (
             <div className="ticket-div" key={ticket.id} onClick={() => handleClick(ticket.id)}>
                 <Ticket title={ticket.title}
                     description={ticket.description}
-                    deadline={ticket.deadline}
+                    deadline={formatDate(ticket.deadline)}
                     status={ticket.status}
                 />
             </div>
         )
     });
 
-    const renderFilteredTickets = filteredTickets.map((ticket) => {
+    let renderFilteredTickets = filteredTickets.map((ticket) => {
         return (
             <div className="ticket-div" key={ticket.id} onClick={() => handleClick(ticket.id)}>
                 <Ticket title={ticket.title}
                     description={ticket.description}
-                    deadline={ticket.deadline}
+                    deadline={formatDate(ticket.deadline)}
                     status={ticket.status}
                 />
             </div>
         )
-    })
+    });
+
+    if (filteredTickets.length === 0) {
+        renderFilteredTickets = (
+            <div>
+                <h3 className="no-tickets">No Tickets</h3>
+            </div>
+        );
+    };
+
+    if (renderTicketsList.length === 0) {
+        renderTicketsList = (
+            <div>
+                <h3 className="no-tickets">No Tickets</h3>
+            </div>
+        );
+    };
 
     return (
         <>
