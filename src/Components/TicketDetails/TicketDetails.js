@@ -5,8 +5,9 @@ import { useEffect } from "react";
 import Form from 'react-bootstrap/Form';
 import { useDispatch, useSelector } from "react-redux";
 import { assignTicket, closeTicket, selectTicket } from "../../redux/actions/ticketActions";
-import { Button } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import Alert from 'react-bootstrap/Alert';
+import { formatDate } from "../Utils/FormatDate";
 
 
 const PATCH_TICKET_URL = `http://localhost:8000/tickets_app/v1/tickets/`;
@@ -202,63 +203,120 @@ const TicketDetails = () => {
                     You closed this ticket
                 </Alert>
             )}
-            <h2>Here is Ticket Details</h2>
-            <p>ID: {selectedTicket.id}</p>
-            <p>Title: {selectedTicket.title}</p>
-            <p>Deadline: {selectedTicket.deadline}</p>
-            <p>Description: {selectedTicket.description}</p>
-            <p>Created By: {createdByUser ? createdByUser.username : null}</p>
-            {(selectedTicket.status === 3) ?
-                <p>Treated By: {treatedByUser ? treatedByUser.username : null}</p> :
-                null}
-            {(selectedTicket.status === 2) ?
-                <p>Being Treated By: {treatedByUser ? treatedByUser.username : null}</p> :
-                null}
-            {(selectedTicket.status === 3 && selectedTicket.feedback) ?
-                <>
-                    <p>Remarks: {selectedTicket.remarks}</p>
-                    <Button variant="outline-secondary" onClick={handleDownload}>Download</Button>
-                </> :
-                null}
+            <div className="details-root-container">
+                <div className="status-title-container">
+                    {(selectedTicket.status === 1) ? <div className="status-created"></div> : null}
+                    {(selectedTicket.status === 2) ? <div className="status-assigned"></div> : null}
+                    {(selectedTicket.status === 3) ? <div className="status-closed"></div> : null}
+                    <div className="title-container">
+                        <h2>{selectedTicket.title}</h2>
+                    </div>
+                </div>
+                <Row>
+                    <Col>
+                        <div className="id-container">
+                            <div className="label-container">ID:</div>
+                            <div className="value-container">{selectedTicket.id}</div>
+                        </div>
+                    </Col>
+                    <Col>
+                        <div className="id-container">
+                            <div className="label-container">Created By:</div>
+                            <div className="value-container">{createdByUser ? createdByUser.username : null}</div>
+                        </div>
+                    </Col>
+                </Row>
 
-            {(selectedTicket.status === 2) && (loggedUser.groups.includes(2)) ?
-                <div className="upload-file-container">
-                    <Form onSubmit={handleClose} encType="multipart/form-data">
-                        <Form.Group className="mb-3" >
-                            <Form.Label>Description</Form.Label>
-                            <Form.Control as="textarea"
-                                id="description"
-                                value={remarks}
-                                onChange={(event) => {
-                                    setRemarks(event.target.value)
-                                }} required />
-                        </Form.Group>
-                        <Form.Group controlId="formFile" className="mb-3">
-                            <Form.Label>Upload descriptif file</Form.Label>
-                            <Form.Control type="file"
+                <Row>
+                    <Col>
+                        <div className="id-container">
+                            <div className="label-container">Deadline:</div>
+                            <div className="value-container">{formatDate(selectedTicket.deadline)}</div>
+                        </div>
+                    </Col>
+                </Row>
 
-                                onChange={(event) => {
-                                    setFile(event.target.files[0])
-                                }} />
-                        </Form.Group>
-                        <Button variant="success" type="submit">
-                            Close Ticket
-                        </Button>
-                    </Form>
-                </div> :
-                null
-            }
-            {(Object.keys(selectedTicket).length === 0) ? null :
-                <>
-                    {(selectedTicket.status === 1) && (loggedUser.groups.includes(2)) ?
-                        <Button variant="warning" type="button" onClick={() => handleTreatment()}>
-                            Treat Ticket
-                        </Button> :
-                        null
-                    }
+                <Row>
+                    <Col>
+                        <div className="id-container">
+                            <div className="label-container">Description:</div>
+                            <div className="value-container">{selectedTicket.description}</div>
+                        </div>
+                    </Col>
+                </Row>
 
-                </>
-            }
+                {(selectedTicket.status === 3) ?
+                    <div className="id-container">
+                        <div className="label-container">Treated By:</div>
+                        <div className="value-container">{treatedByUser ? treatedByUser.username : null}</div>
+                    </div>
+                    :
+                    null}
+                {(selectedTicket.status === 2) ?
+                    <div className="id-container">
+                        <div className="label-container">Being Treated By:</div>
+                        <div className="value-container">{treatedByUser ? treatedByUser.username : null}</div>
+                    </div>
+                    :
+                    null}
+
+                {(selectedTicket.status === 3 ) ?
+                    <>
+                        <div className="id-container">
+                            <div className="label-container">Remarks:</div>
+                            <div className="value-container">{selectedTicket.remarks}</div>
+                        </div>
+                    </> :
+                    null}
+                {(selectedTicket.status === 3 && selectedTicket.feedback) ?
+                    <>
+                        <Button variant="outline-secondary" onClick={handleDownload}>Download File</Button>
+                    </> :
+                    null}
+
+                {(selectedTicket.status === 2) && (loggedUser.groups.includes(2)) ?
+                    <div className="upload-file-container">
+                        <Form onSubmit={handleClose} encType="multipart/form-data">
+                            <Form.Group className="mb-3" >
+                                <Form.Label>
+                                    <div className="label-container">Description:</div>
+                                </Form.Label>
+                                <Form.Control as="textarea"
+                                    id="description"
+                                    value={remarks}
+                                    onChange={(event) => {
+                                        setRemarks(event.target.value)
+                                    }} required />
+                            </Form.Group>
+                            <Form.Group controlId="formFile" className="mb-3">
+                                <Form.Label>
+                                    <div className="label-container">Upload descriptif file:</div>
+                                </Form.Label>
+                                <Form.Control type="file"
+
+                                    onChange={(event) => {
+                                        setFile(event.target.files[0])
+                                    }} />
+                            </Form.Group>
+                            <Button variant="success" type="submit">
+                                Close Ticket
+                            </Button>
+                        </Form>
+                    </div> :
+                    null
+                }
+                {(Object.keys(selectedTicket).length === 0) ? null :
+                    <>
+                        {(selectedTicket.status === 1) && (loggedUser.groups.includes(2)) ?
+                            <Button variant="warning" type="button" onClick={() => handleTreatment()}>
+                                Treat Ticket
+                            </Button> :
+                            null
+                        }
+
+                    </>
+                }
+            </div>
         </div>
     )
 

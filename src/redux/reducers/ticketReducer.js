@@ -110,23 +110,6 @@ export const selectedTicketReducer = (state = selectedTicketState, { type, paylo
                 ...state,
                 selectedTicket: {}
             };
-        
-        /* case ticketActionTypes.TREAT_SELECTED_TICKET:
-            let selectedForTreat = {...state};
-            selectedForTreat.status = 2;
-            return {
-                ...state,
-                selectedTicket: selectedForTreat,
-            };
-
-        case ticketActionTypes.CLOSE_SELECTED_TICKET:
-            let selectedForClose = {...state};
-            selectedForClose.status = 3;
-            return {
-                ...state,
-                selectedTicket: selectedForClose,
-            }; */
-        
 
         default:
             return state;

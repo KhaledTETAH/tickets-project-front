@@ -124,7 +124,7 @@ const Header = () => {
                           <div className="dropdown-content">
                             <div className="notification-container">
                               <div className="status-title-container">
-                                {(notification.ticket_status === 2) ? <div className="status-assignrd"></div> : null}
+                                {(notification.ticket_status === 2) ? <div className="status-assigned"></div> : null}
                                 {(notification.ticket_status === 3) ? <div className="status-closed"></div> : null}
                                 <div className="ticket-title">{notification.by_ticket.title}</div>
                               </div>

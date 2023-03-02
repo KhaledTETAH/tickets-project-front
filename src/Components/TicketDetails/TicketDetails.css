@@ -1,3 +1,60 @@
 .upload-file-container {
     width: 400px;
 }
+
+.details-root-container {
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 6px;
+    margin: 20px;
+    margin-right: 40px;
+    padding: 20px;
+    width: auto;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.status-title-container {
+    display: flex;
+    align-items: center;
+}
+
+.status-created {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    background-color: red;
+}
+
+.status-assigned {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    background-color: orange;
+}
+
+.status-closed {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    background-color: green;   
+}
+
+.id-container {
+    display: flex;
+    align-items: center;
+}
+
+.label-container {
+    font-size: 18px;
+    font-weight: 600;
+    margin-right: 15px;
+    margin-bottom: 8px;
+}
+
+.value-container {
+    font-size: 17px;
+    font-weight: 400;
+    margin-bottom: 8px;
+}
+
+
