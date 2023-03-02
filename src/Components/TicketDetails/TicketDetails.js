@@ -8,12 +8,7 @@ import { assignTicket, closeTicket, selectTicket } from "../../redux/actions/tic
 import { Button, Col, Row } from "react-bootstrap";
 import Alert from 'react-bootstrap/Alert';
 import { formatDate } from "../Utils/FormatDate";
-
-
-const PATCH_TICKET_URL = `http://localhost:8000/tickets_app/v1/tickets/`;
-const USER_INFO_URL = `http://localhost:8000/tickets_app/v1/users/`;
-const DOWNLOAD_FILE_URL = `http://localhost:8000/tickets_app/v1/file/download/`;
-const ADD_NOTIFICATION_URL = `http://localhost:8000/tickets_app/v1/notifications/`;
+import { TICKETS_URL, USERS_URL, DOWNLOAD_FILE_URL, NOTIFICATIONS_URL } from "../Utils/ConfigApi";
 
 const TicketDetails = () => {
 
@@ -57,7 +52,7 @@ const TicketDetails = () => {
 
 
     const handleClick = async (id) => {
-        const response = await axios.get(PATCH_TICKET_URL + id)
+        const response = await axios.get(TICKETS_URL + id)
             .catch((error) => {
                 console.log(error)
             });
@@ -71,7 +66,7 @@ const TicketDetails = () => {
             assigned_to: loggedUser.id,
             assigned_on: new Date()
         }
-        const response = await axios.patch(PATCH_TICKET_URL + id + "/", payload)
+        const response = await axios.patch(TICKETS_URL + id + "/", payload)
             .catch((error) => { console.log(error) })
         const updatedTicket = { ...selectedTicket };
         updatedTicket.status = payload.status;
@@ -105,7 +100,7 @@ const TicketDetails = () => {
             status: 3
         }
         console.log("payload: ", payload);
-        const response = await axios.patch(PATCH_TICKET_URL + id + "/", formData, axiosConfig)
+        const response = await axios.patch(TICKETS_URL + id + "/", formData, axiosConfig)
             .catch((error) => { console.log(error) })
         const updatedTicket = { ...selectedTicket };
         //updatedTicket.feedback = formData.feedback;
@@ -161,7 +156,7 @@ const TicketDetails = () => {
 
     const fetchCreatenotification = async (payload) => {
         console.log("payload: ", payload);
-        const response = await axios.post(ADD_NOTIFICATION_URL, payload)
+        const response = await axios.post(NOTIFICATIONS_URL, payload)
             .catch((error) => { console.log(error) })
         console.log("Notification: ", response.data);
     };
@@ -169,14 +164,14 @@ const TicketDetails = () => {
     useEffect(() => {
         /** get the information of the creater user */
         const fetchCreatedByUser = async (id) => {
-            const response = await axios.get(USER_INFO_URL + id)
+            const response = await axios.get(USERS_URL + id)
                 .catch((error) => { console.log(error) });
             setCreatedByUser(response.data);
         };
         fetchCreatedByUser(selectedTicket.created_by);
 
         const fetchTreatedByUser = async (id) => {
-            const response = await axios.get(USER_INFO_URL + id)
+            const response = await axios.get(USERS_URL + id)
                 .catch((error) => { console.log(error) });
             setTreatedByUser(response.data);
         };
@@ -190,16 +185,12 @@ const TicketDetails = () => {
     return (
         <div>
             {showTreatAlert && (
-                <Alert key="warning" variant="warning" onClose={() => setTimeout(() => {
-                    setShowTreatAlert(false)
-                }, 3000)} dismissible>
+                <Alert key="warning" variant="warning" onClose={() => setShowTreatAlert(false)} dismissible>
                     You start treating this ticket
                 </Alert>
             )}
             {showCloseAlert && (
-                <Alert key="success" variant="success" onClose={() => setTimeout(() => {
-                    setShowCloseAlert(false)
-                }, 3000)} dismissible>
+                <Alert key="success" variant="success" onClose={() => setShowCloseAlert(false)} dismissible>
                     You closed this ticket
                 </Alert>
             )}

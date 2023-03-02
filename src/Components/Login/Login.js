@@ -5,60 +5,54 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { LOGIN_URL, USER_INFO_URL } from "../Utils/ConfigApi";
 import './Login.css';
+import Alert from 'react-bootstrap/Alert';
 
-//const LOGIN_URL = `http://localhost:8000/dj-rest-auth/login/`;
-//const USER_INFO_URL = `http://localhost:8000/tickets_app/v1/users/username/`;
 
 const Login = (props) => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [loginError, setLoginError] = useState();
     const navigate = useNavigate();
 
 
-    const handleLoginSubmit = (event) => {
+    const handleLoginSubmit = async (event) => {
         event.preventDefault();
         const loginEntity = { username, password };
+
         try {
-            fetchLogin(loginEntity);
-            fetchUserInfo(username);
+            const response = await axios.post(LOGIN_URL, loginEntity);
+            
+            const userResponse = await axios.get(USER_INFO_URL + username);
+
+            localStorage.setItem('user', JSON.stringify(userResponse.data));
             navigate("/home/");
-            resetLoginForm();
-        } catch (error) {
+          } catch (error) {
+            setLoginError(error.response.data.non_field_errors);
+          };
+        resetLoginForm();
+    };
 
-        }
-
-    }
-
-    const fetchLogin = async (entity) => {
-
-        const response = await axios.post(LOGIN_URL, entity)
-            .catch((error) => {
-                console.log(error)
-            })
-        console.log(response);
-
-    }
-
-    const fetchUserInfo = async (username) => {
-        try {
-            const response = await axios.get(USER_INFO_URL + username)
-            console.log(response.data)
-            localStorage.setItem("user", JSON.stringify(response.data));
-        } catch (error) {
-            console.log(error);
-        }
-
-    }
 
     const resetLoginForm = () => {
         setPassword('');
         setUsername('');
-    }
+    };
 
     return (
         <div className="login-container-1">
+            <div className="login-title-container">
+                <h2>
+                    LOGIN PAGE
+                </h2>
+            </div>
+            
             <div className="login-container-2">
+            {loginError && (
+                <Alert key="danger" variant="danger" onClose={() => setLoginError(null)} dismissible>
+                    {loginError}
+                </Alert>
+            )}
                 <Form onSubmit={handleLoginSubmit}>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Username</Form.Label>

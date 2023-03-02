@@ -1,13 +1,11 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from "axios";
-import { selectTicket, setTickets, getUserNotifications } from "../../redux/actions/ticketActions";
+import { selectTicket, setTickets } from "../../redux/actions/ticketActions";
 import Ticket from "../Ticket/Ticket";
 import './TicketList.css';
+import { TICKETS_URL } from "../Utils/ConfigApi";
 import { formatDate } from "../Utils/FormatDate";
-
-const URL = `http://localhost:8000/tickets_app/v1/tickets/`;
-const NOTIFICATIONS_URL = `http://localhost:8000/tickets_app/v1/notifications/ticket/details/`;
 
 const TicketList = (props) => {
     const tickets = useSelector((state) => state.ticketsReducer.tickets);
@@ -21,7 +19,7 @@ const TicketList = (props) => {
     const dispatch = useDispatch();
 
     const fetchTicket = async () => {
-        const response = await axios.get(URL)
+        const response = await axios.get(TICKETS_URL)
             .catch((error) => {
                 console.log(error)
             });
@@ -29,7 +27,7 @@ const TicketList = (props) => {
     };
 
     const handleClick = async (id) => {
-        const response = await axios.get(URL + id)
+        const response = await axios.get(TICKETS_URL + id)
             .catch((error) => {
                 console.log(error)
             });
@@ -84,7 +82,6 @@ const TicketList = (props) => {
 
     return (
         <>
-            {/* {renderFilteredTickets} */}
             {filteringTicketsBool ? renderFilteredTickets : renderTicketsList}
         </>
     )

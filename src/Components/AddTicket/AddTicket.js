@@ -6,8 +6,7 @@ import { useDispatch } from "react-redux";
 import { addTicket } from "../../redux/actions/ticketActions";
 import axios from "axios";
 import Alert from 'react-bootstrap/Alert';
-
-const ADD_URL = `http://localhost:8000/tickets_app/v1/tickets/`;
+import { TICKETS_URL } from "../Utils/ConfigApi"; 
 
 const AddTicket = () => {
 
@@ -39,10 +38,14 @@ const AddTicket = () => {
     resetForm();
 
     setShowAlert(true);
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 3000)
+
   }
 
   const fetchAddTicket = async (newTicket) => {
-    const response = await axios.post(ADD_URL, newTicket)
+    const response = await axios.post(TICKETS_URL, newTicket)
       .catch((error) => {
         console.log(error)
       });

@@ -7,13 +7,9 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import axios from "axios";
 import './Header.css';
 import { useDispatch, useSelector } from "react-redux";
+import { LOGOUT_URL, USER_NOTIFICATIONS_URL, TICKETS_URL, NOTIFICATIONS_URL } from "../Utils/ConfigApi";
 import { filterTicketsByStatus, filteringTickets, removeSelectedTicket, getUserNotifications, selectTicket, readNotification } from "../../redux/actions/ticketActions";
 import { formatDate1 } from "../Utils/FormatDate1";
-
-const LOGOUT_URL = `http://localhost:8000/dj-rest-auth/logout/`;
-const NOTIFICATIONS_URL = `http://localhost:8000/tickets_app/v1/notifications/ticket/details/`;
-const URL = `http://localhost:8000/tickets_app/v1/tickets/`;
-const PATCH_NOTIFICATIONS_URL = `http://localhost:8000/tickets_app/v1/notifications/`;
 
 const Header = () => {
 
@@ -52,12 +48,12 @@ const Header = () => {
   };
 
   const handleShowNotifications = async (ticketId, notifId) => {
-    const response = await axios.get(URL + ticketId)
+    const response = await axios.get(TICKETS_URL + ticketId)
       .catch((error) => {
         console.log(error)
       });
 
-    const res = await axios.patch(PATCH_NOTIFICATIONS_URL + notifId + "/", { read: true })
+    const res = await axios.patch(NOTIFICATIONS_URL + notifId + "/", { read: true })
       .catch((error) => {
         console.log(error);
       });
@@ -67,7 +63,7 @@ const Header = () => {
   };
 
   const fetchUserNotifications = async (userId) => {
-    const response = await axios.get(NOTIFICATIONS_URL + userId)
+    const response = await axios.get(USER_NOTIFICATIONS_URL + userId)
       .catch((error) => {
         console.log(error);
       });
@@ -84,7 +80,7 @@ const Header = () => {
         <Navbar bg="primary" variant="dark" className="navbar-container"
          style={{ position: "fixed", top: 0, width: "100%", background: "white", zIndex: 1,marginBottom:50 }} >
           <Container >
-            <Navbar.Brand href="#home">Navbar</Navbar.Brand>
+            <Navbar.Brand href="#home">TICKETS APP</Navbar.Brand>
 
             <Nav className="me-auto">
 
