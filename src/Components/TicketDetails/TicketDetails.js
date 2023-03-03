@@ -261,7 +261,7 @@ const TicketDetails = () => {
                     null}
                 {(selectedTicket.status === 3 && selectedTicket.feedback) ?
                     <>
-                        <Button variant="outline-secondary" onClick={handleDownload}>Download File</Button>
+                        <Button variant="outline-secondary" type="button" onClick={handleDownload}>Download File</Button>
                     </> :
                     null}
 

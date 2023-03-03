@@ -1,5 +1,5 @@
-//const DOMAIN_NAME = 'https://tickets-app-backend.onrender.com';
-const DOMAIN_NAME = 'http://localhost:8000';
+const DOMAIN_NAME = 'https://tickets-app-backend.onrender.com';
+//const DOMAIN_NAME = 'http://localhost:8000';
 const PROJECT_CONTEXT = 'tickets_app';
 const PROJECT_VERSION = 'v1';
 const BASE_URL = `${DOMAIN_NAME}/${PROJECT_CONTEXT}/${PROJECT_VERSION}`;
