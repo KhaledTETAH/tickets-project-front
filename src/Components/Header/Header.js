@@ -31,11 +31,9 @@ const Header = () => {
 
   const handleLogout = () => {
     fetchLogoutApi();
-    console.log("logout freeze");
     setTimeout(() => {
       navigate('/');
   }, 2000);
-  console.log("logout finished");
   };
 
   const fetchLogoutApi = async () => {
