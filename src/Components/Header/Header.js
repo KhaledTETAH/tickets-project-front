@@ -76,7 +76,7 @@ const Header = () => {
 
   return (
     <>
-      {window.location.pathname !== "/" ?
+      {window.location.pathname !== "/#" ?
         <Navbar bg="primary" variant="dark" className="navbar-container"
          style={{ position: "fixed", top: 0, width: "100%", background: "white", zIndex: 1,marginBottom:50 }} >
           <Container >

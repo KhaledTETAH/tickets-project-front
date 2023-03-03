@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, HashRouter } from 'react-router-dom';
 import HomeContainer from './Components/HomeContainer/HomeContainer';
 import Login from './Components/Login/Login';
 import PrivateRoute from './Components/Login/PrivateRoute';
@@ -13,7 +13,7 @@ function App() {
   return (
     <div className="App"> 
         <>
-          <BrowserRouter>         
+          <HashRouter>         
             <Routes>
               <Route path='/'  element={
                 <AlreadyLoggedIn>
@@ -30,7 +30,7 @@ function App() {
 
               
             </Routes>
-          </BrowserRouter> 
+          </HashRouter> 
         </>   
     </div>
   );
