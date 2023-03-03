@@ -10,12 +10,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { LOGOUT_URL, USER_NOTIFICATIONS_URL, TICKETS_URL, NOTIFICATIONS_URL } from "../Utils/ConfigApi";
 import { filterTicketsByStatus, filteringTickets, removeSelectedTicket, getUserNotifications, selectTicket, readNotification } from "../../redux/actions/ticketActions";
 import { formatDate1 } from "../Utils/FormatDate1";
+import { useNavigate } from "react-router-dom";
+
 
 const Header = () => {
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const userNotifications = useSelector((state) => state.notificationReducer.notifications);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   /* display the add form */
   const goToAddTicketForm = () => {
@@ -28,6 +31,7 @@ const Header = () => {
 
   const handleLogout = () => {
     fetchLogoutApi();
+    navigate('/');
   };
 
   const fetchLogoutApi = async () => {
