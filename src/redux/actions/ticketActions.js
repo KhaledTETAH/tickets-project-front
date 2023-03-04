@@ -28,6 +28,20 @@ export const filterTicketsByStatus = (status) => {
     }
 };
 
+export const filterTicketsByMyTicketsFr = (userId) => {
+    return {
+        type: ticketActionTypes.FILTER_TICKETS_MY_TICKETS_FR,
+        payload: userId,
+    }
+};
+
+export const filterTicketsByMyTicketsDz = (userId) => {
+    return {
+        type: ticketActionTypes.FILTER_TICKETS_MY_TICKETS_DZ,
+        payload: userId,
+    }
+};
+
 export const assignTicket = (updatedTicket) => {
     return {
         type: ticketActionTypes.ASSIGN_TICKET,

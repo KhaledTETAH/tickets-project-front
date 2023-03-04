@@ -1,6 +1,4 @@
-import { useSelector } from "react-redux";
 import { ticketActionTypes } from "../constants/ticketAction-types";
-import { selectedTicket } from "../actions/ticketActions";
 
 
 const ticketInitialState = {
@@ -41,6 +39,26 @@ export const ticketsReducer = (state = ticketInitialState, { type, payload }) =>
                 (ticket) => ticket.status === status
             );
             return { ...state, filteredTickets };
+
+        case ticketActionTypes.FILTER_TICKETS_MY_TICKETS_FR:
+            const frUserId = payload;
+            const frFilteredTickets = state.tickets.filter(
+                (ticket) => ticket.created_by === frUserId
+            );
+            return {
+                ...state,
+                filteredTickets: frFilteredTickets,
+            };
+        
+        case ticketActionTypes.FILTER_TICKETS_MY_TICKETS_DZ:
+            const dzUserId = payload;
+            const dzFilteredTickets = state.tickets.filter(
+                (ticket) => ticket.assigned_to === dzUserId
+            );
+            return {
+                ...state,
+                filteredTickets: dzFilteredTickets,
+            }
 
         case ticketActionTypes.ASSIGN_TICKET:
             const updatedTicket = payload;

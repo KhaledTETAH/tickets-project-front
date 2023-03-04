@@ -24,17 +24,6 @@ const TicketDetails = () => {
     const [remarks, setRemarks] = useState('');
     const dispatch = useDispatch();
 
-
-
-    /* handle the PATCH request to th api */
-    const handleTreatment = () => {
-        console.log("selectedTicket.id: ", selectedTicket.id);
-        fetchAssignReaquest(selectedTicket.id);
-        createNotification();
-        handleClick(selectedTicket.id);
-        showTreatAlertTimeout();
-    }
-
     const showTreatAlertTimeout = () => {
         setShowTreatAlert(true);
         setTimeout(() => {
@@ -57,6 +46,15 @@ const TicketDetails = () => {
                 console.log(error)
             });
         dispatch(selectTicket(response.data));
+    }
+
+    /* handle the PATCH request to th api */
+    const handleTreatment = () => {
+        console.log("selectedTicket.id: ", selectedTicket.id);
+        fetchAssignReaquest(selectedTicket.id);
+        createNotification();
+        handleClick(selectedTicket.id);
+        showTreatAlertTimeout();
     }
 
     /* send PATCH request to the api */
@@ -122,8 +120,8 @@ const TicketDetails = () => {
                 params: { "file_path": filePath },
                 responseType: 'blob'
             })
-            .catch((error) => { console.log(error); })
-        console.log(response);
+            .catch((error) => { console.log("error: ",error); })
+        console.log("response: ",response);
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
@@ -261,7 +259,7 @@ const TicketDetails = () => {
                     null}
                 {(selectedTicket.status === 3 && selectedTicket.feedback) ?
                     <>
-                        <Button variant="outline-secondary" type="button" onClick={handleDownload}>Download File</Button>
+                        <Button variant="outline-secondary"  onClick={handleDownload}>Download File</Button>
                     </> :
                     null}
 

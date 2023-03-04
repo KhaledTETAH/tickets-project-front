@@ -8,7 +8,7 @@ import axios from "axios";
 import './Header.css';
 import { useDispatch, useSelector } from "react-redux";
 import { LOGOUT_URL, USER_NOTIFICATIONS_URL, TICKETS_URL, NOTIFICATIONS_URL } from "../Utils/ConfigApi";
-import { filterTicketsByStatus, filteringTickets, removeSelectedTicket, getUserNotifications, selectTicket, readNotification } from "../../redux/actions/ticketActions";
+import { filterTicketsByStatus, filteringTickets, removeSelectedTicket, getUserNotifications, selectTicket, readNotification, filterTicketsByMyTicketsFr, filterTicketsByMyTicketsDz } from "../../redux/actions/ticketActions";
 import { formatDate1 } from "../Utils/FormatDate1";
 import { useNavigate } from "react-router-dom";
 
@@ -27,6 +27,19 @@ const Header = () => {
 
   const getNonReadNotification = () => {
     return userNotifications.filter(notif => notif.read === false).length;
+  }
+
+  const handleGetMyTickets = () => {
+    if(user.groups.includes(1)){
+      dispatch(filteringTickets(true));
+      dispatch(filterTicketsByMyTicketsFr(user.id));
+    };
+
+    if(user.groups.includes(2)){
+      dispatch(filteringTickets(true));
+      dispatch(filterTicketsByMyTicketsDz(user.id));
+    }
+
   }
 
   const handleLogout = () => {
@@ -146,6 +159,9 @@ const Header = () => {
                   </div>
                 </NavDropdown>
                 : null}
+
+              <Nav.Link onClick={() => handleGetMyTickets()}>My Tickets</Nav.Link>
+
               {(user.groups.includes(1)) ?
                 <Nav.Link onClick={() => goToAddTicketForm()}>Add Form</Nav.Link>
                 : null}
