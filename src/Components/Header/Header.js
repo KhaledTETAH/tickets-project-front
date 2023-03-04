@@ -44,7 +44,9 @@ const Header = () => {
 
   const handleLogout = () => {
     fetchLogoutApi();
-    navigate("/#");
+    setTimeout(() => {
+      navigate("/");
+    }, 2000);
   };
 
   const fetchLogoutApi = async () => {
@@ -171,7 +173,7 @@ const Header = () => {
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>
-                  <Dropdown.Item /* href="/#" */ onClick={() => handleLogout()} >Logout</Dropdown.Item>
+                  <Dropdown.Item /* href="/#/" */ onClick={() => handleLogout()} >Logout</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
             </Nav>
