@@ -46,7 +46,7 @@ const Header = () => {
     fetchLogoutApi();
     setTimeout(() => {
       navigate("/");
-    }, 2000);
+    }, 1000);
   };
 
   const fetchLogoutApi = async () => {
